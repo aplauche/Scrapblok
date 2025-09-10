@@ -1,0 +1,67 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "ap/scrapblok-image",
+	"version": "0.1.0",
+	"title": "Scrapblok - Image",
+	"category": "layout",
+	"icon": "sticky",
+	"description": "Add an image or svg layer to your scrapblok",
+	"supports": {
+		"html": false
+	},
+	"attributes": {
+		"top": {
+			"type": "string",
+			"default": "0"
+		},
+		"bottom": {
+			"type": "string",
+			"default": ""
+		},
+		"left": {
+			"type": "string",
+			"default": "0"
+		},
+		"right": {
+			"type": "string",
+			"default": ""
+		},
+		"width": {
+			"type": "string",
+			"default": "200px"
+		},
+		"height": {
+			"type": "string",
+			"default": "auto"
+		},
+		"rotation": {
+			"type": "number",
+			"default": 0
+		},
+		"zIndex": {
+			"type": "integer",
+			"default": 2
+		},
+		"parallax": {
+			"type": "integer",
+			"default": 0
+		},
+		"hideFromWorkspace": {
+			"type": "boolean",
+			"default": false
+		},
+		"svg": {
+			"type": "object",
+			"default": {
+				"id": 0,
+				"url": ""
+			}
+		}
+	},
+	"parent": ["ap/scrapblok"],
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}
