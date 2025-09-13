@@ -38,9 +38,11 @@ $rotation =  $attributes["rotation"] != "" ? $attributes["rotation"] : 0;
 	data-plax="<?php echo $attributes['parallax'] ?>"
 	<?php echo get_block_wrapper_attributes(); ?>>
 	<div>
-		<img
-			style="transform-origin: 50% 50%; rotate: <?php echo $rotation ?>deg;"
-			src="<?php echo $attributes["svg"]["url"] ?>"
-			alt="">
+		<div class="plax-container">
+			<img
+				style="transform-origin: 50% 50%; rotate: <?php echo $rotation ?>deg;"
+				src="<?php echo $attributes["svg"]["url"] ?>"
+				alt="">
+		</div>
 	</div>
 </div>
