@@ -111,8 +111,8 @@ export default function Edit({attributes, setAttributes}) {
 				{attributes?.svg?.url && (
 					<img 
 						style={{
-							height: attributes.height,
-							width: attributes.width,
+							height: "auto",
+							width: "100%",
 							transformOrigin: "50% 50%",
 							rotate: `${attributes.rotation}deg`,
 							objectFit: "contain"
