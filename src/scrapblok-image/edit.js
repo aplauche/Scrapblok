@@ -13,16 +13,19 @@ import { __ } from '@wordpress/i18n';
  */
 import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 
-import { 
-	Panel, 
+import {
+	Panel,
 	PanelBody,
 	BaseControl,
 	Button,
 	__experimentalUnitControl as UnitControl,
 	TextControl,
 	ToggleControl,
-	AnglePickerControl
+	AnglePickerControl,
+	SelectControl
 } from '@wordpress/components';
+
+import CanvasPositioner from './components/CanvasPositioner';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -69,23 +72,41 @@ export default function Edit({attributes, setAttributes}) {
 		{ value: '%', label: '%', default: 10 },
 	];
 
+	// Calculate position based on mode
+	const calculatePositionStyle = () => {
+		if (attributes.positionMode === 'canvas') {
+			return {
+				position: "absolute",
+				height: attributes.height,
+				width: attributes.width,
+				left: `${attributes.canvasPosition.x}%`,
+				top: `${attributes.canvasPosition.y}%`,
+				zIndex: attributes.zIndex,
+				objectFit: "contain",
+				translate: "-50% -50%"
+			};
+		} else {
+			return {
+				position: "absolute",
+				height: attributes.height,
+				width: attributes.width,
+				top: attributes.top !=  "" ? attributes.top : "unset",
+				bottom: attributes.bottom !=  "" ? attributes.bottom : "unset",
+				left: attributes.left !=  "" ? attributes.left : "unset",
+				right: attributes.right !=  "" ? attributes.right : "unset",
+				zIndex: attributes.zIndex,
+				objectFit: "contain",
+			};
+		}
+	};
+
 	return (
 		<>
 		{attributes?.hideFromWorkspace ? (
 			<></>
 		) : (
 			<div { ...useBlockProps({
-				style: {
-					position: "absolute",
-					height: attributes.height,
-					width: attributes.width,
-					top: attributes.top !=  "" ? attributes.top : "unset",
-					bottom: attributes.bottom !=  "" ? attributes.bottom : "unset",
-					left: attributes.left !=  "" ? attributes.left : "unset",
-					right: attributes.right !=  "" ? attributes.right : "unset",
-					zIndex: attributes.zIndex,
-					objectFit: "contain"
-				}
+				style: calculatePositionStyle()
 			}) }>
 				{attributes?.svg?.url && (
 					<img 
@@ -106,15 +127,6 @@ export default function Edit({attributes, setAttributes}) {
 		<InspectorControls>
       <Panel>
         <PanelBody>
-
-				<ToggleControl
-            __nextHasNoMarginBottom
-            label="Hide SVG Block from Editor"
-            checked={ attributes?.hideFromWorkspace }
-            onChange={ (newValue) => {
-                setAttributes( {hideFromWorkspace: newValue} );
-            } }
-        />
 
 				<BaseControl
           label={`Image File`}
@@ -152,22 +164,41 @@ export default function Edit({attributes, setAttributes}) {
 					onChange={ ( value ) => setAttributes({width: value}) }
         />
 
-				<BaseControl
-          label={`Positioning`}
-        >
-				<div className='pd__position-controls'>
-					<div className='position-controls__row'>
-						<UnitControl onChange={ (val) => setAttributes({top: val}) } value={ attributes.top } units={ units } />
-					</div>
-					<div className='position-controls__row'>
-						<UnitControl onChange={ (val) => setAttributes({left: val}) } value={ attributes.left } units={ units } />
-						<UnitControl onChange={ (val) => setAttributes({right: val}) } value={ attributes.right } units={ units } />
-					</div>
-					<div className='position-controls__row'>
-						<UnitControl onChange={ (val) => setAttributes({bottom: val}) } value={ attributes.bottom } units={ units } />
-					</div>
-				</div>
-				</BaseControl>
+				<SelectControl
+					__nextHasNoMarginBottom
+					label={__('Position Mode', 'scrapblok')}
+					value={attributes.positionMode}
+					options={[
+						{ label: __('Canvas', 'scrapblok'), value: 'canvas' },
+						{ label: __('Manual Units', 'scrapblok'), value: 'units' }
+					]}
+					onChange={(value) => setAttributes({ positionMode: value })}
+				/>
+
+				{attributes.positionMode === 'canvas' ? (
+					<CanvasPositioner
+						canvasPosition={attributes.canvasPosition}
+						onPositionChange={(newPosition) => setAttributes({ canvasPosition: newPosition })}
+						parentDimensions={{ width: 16, height: 9 }}
+					/>
+				) : (
+					<BaseControl
+						label={__('Manual Positioning', 'scrapblok')}
+					>
+						<div className='pd__position-controls'>
+							<div className='position-controls__row'>
+								<UnitControl onChange={ (val) => setAttributes({top: val}) } value={ attributes.top } units={ units } />
+							</div>
+							<div className='position-controls__row'>
+								<UnitControl onChange={ (val) => setAttributes({left: val}) } value={ attributes.left } units={ units } />
+								<UnitControl onChange={ (val) => setAttributes({right: val}) } value={ attributes.right } units={ units } />
+							</div>
+							<div className='position-controls__row'>
+								<UnitControl onChange={ (val) => setAttributes({bottom: val}) } value={ attributes.bottom } units={ units } />
+							</div>
+						</div>
+					</BaseControl>
+				)}
 
 				<AnglePickerControl
 					label='Rotation'
@@ -201,7 +232,17 @@ export default function Edit({attributes, setAttributes}) {
 							setAttributes({ parallax: parseInt(e.target.value) || 0 })
 						}
 					/>
-				</BaseControl>
+
+					</BaseControl>
+
+								<ToggleControl
+            __nextHasNoMarginBottom
+            label="Hide SVG Block from Editor"
+            checked={ attributes?.hideFromWorkspace }
+            onChange={ (newValue) => {
+                setAttributes( {hideFromWorkspace: newValue} );
+            } }
+        	/>
 
         </PanelBody>
       </Panel>
