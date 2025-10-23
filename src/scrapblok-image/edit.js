@@ -213,12 +213,17 @@ export default function Edit({attributes, setAttributes}) {
 					<input
 						style={{width: "100%"}}
 						type="number"
-						min={0}
+						min={-10}
 						max={100}
-						value={attributes.zIndex ?? 1}
-						onChange={(e) =>
-							setAttributes({ zIndex: parseInt(e.target.value) || 1 })
-						}
+						value={attributes.zIndex ?? ""}
+						onChange={(e) => {
+							const val = e.target.value;
+							if (val === "") {
+								setAttributes({ zIndex: "" });
+							} else {
+								setAttributes({ zIndex: Number(val) });
+							}
+						}}
 					/>
 				</BaseControl>
 
